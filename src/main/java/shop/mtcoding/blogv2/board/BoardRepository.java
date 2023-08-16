@@ -1,13 +1,23 @@
 package shop.mtcoding.blogv2.board;
 
+
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.Query;
 
 /*
- * save()인터트, findId()프라이머리키로 조회,findALL() 전체조회, count()갯수알때,deleteById()
- JpaRepository crud메서드를 주는애
- 스프링이 실행될때 BoardRepository 의 구현체가 ioc컨테이너에 생성된다
+ * save(), findById(), findAll(), count(), deleteById()
  */
-public interface BoardRepository extends JpaRepository<Board, Integer>{
+//스프링이 실행될 때,boardrepository의 구현체가 ioc컨테이너에 생성된다.
+//타입으로 찾는다, 싱글톤임 
+public interface BoardRepository extends JpaRepository<Board, Integer> {
+
+    //select id,title,user_id created_at from board_tb b inner join user_tb u on b.user_id = u.id ;
+    //fetch를 붙여야 *를 한다 ,연관된 객체에 들어가서 다 뽑아내는 거(프로젝션??)
+    @Query("select b from Board b join fetch b.user")
+    List<Board> mFindAll();
+
+
 
 }

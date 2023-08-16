@@ -20,6 +20,13 @@ public class UserController {
     @Autowired
     private HttpSession session;
 
+    //브라우저가 
+    @GetMapping("/logout")
+    public String logout() {
+        session.invalidate();
+        return "redirect:/";
+    }
+
     // C - V
     @GetMapping("/joinForm")
     public String joinForm() {
