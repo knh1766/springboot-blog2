@@ -4,11 +4,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import shop.mtcoding.blogv2._core.util.ApiUtil;
 import shop.mtcoding.blogv2._core.util.Script;
 
 @Controller
@@ -71,5 +74,16 @@ public class UserController {
         User user = userService.회원수정(updateDTO, sessionUser.getId());
         session.setAttribute("sessionUser", user);
         return "redirect:/";
+    }
+
+     @GetMapping("/check")
+    public @ResponseBody ApiUtil<String> check( String username) {
+         User user = userService.유저네임중복체크(username);
+         if (user != null) {
+            return new ApiUtil<String>(false,"유저네임이 중복 되었습니다" );
+        }
+        return new ApiUtil<String>(true,"유저네임을 사용할 수 있습니다" );
+        
+       
     }
 }
