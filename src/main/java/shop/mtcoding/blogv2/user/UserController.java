@@ -4,11 +4,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import shop.mtcoding.blogv2._core.util.ApiUtil;
 import shop.mtcoding.blogv2._core.util.Script;
 
 @Controller
@@ -38,7 +41,7 @@ public class UserController {
 
     // M - V - C
     @PostMapping("/join")
-    public @ResponseBody String join(UserRequest.JoinDTO joinDTO) {
+    public String join(UserRequest.JoinDTO joinDTO) {
         // System.out.println(joinDTO.getPic().getOriginalFilename());
         // System.out.println(joinDTO.getPic().getSize());
         // System.out.println(joinDTO.getPic().getContentType());
@@ -54,7 +57,11 @@ public class UserController {
 
     @PostMapping("/login")
     public @ResponseBody String login(UserRequest.LoginDTO loginDTO) {
+        System.out.println("1");
         User sessionUser = userService.로그인(loginDTO);
+        if (sessionUser == null) {
+            return Script.back("로그인 실패");
+        }
         session.setAttribute("sessionUser", sessionUser);
         return Script.href("/");
     }
@@ -75,5 +82,16 @@ public class UserController {
         User user = userService.회원수정(updateDTO, sessionUser.getId());
         session.setAttribute("sessionUser", user);
         return "redirect:/";
+    }
+
+     @GetMapping("/check")
+    public @ResponseBody ApiUtil<String> check( String username) {
+         User user = userService.유저네임중복체크(username);
+         if (user != null) {
+            return new ApiUtil<String>(false,"유저네임이 중복 되었습니다" );
+        }
+        return new ApiUtil<String>(true,"유저네임을 사용할 수 있습니다" );
+        
+       
     }
 }
